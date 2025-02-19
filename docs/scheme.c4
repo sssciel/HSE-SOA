@@ -1,0 +1,87 @@
+specification {
+    element person {
+        style {
+            shape person
+            color green
+        }
+    }
+    element softwareSystem
+    element container
+    element component
+}
+
+model {
+  user = person "Пользователь" "Пользователь соц. сети"
+
+  socialNetwork = softwareSystem "Социальная сеть" {
+    apiGateway = container "API Gateway" {
+      description "Маршрутизация запросов и управление доступом"
+      technology "Go, Gin"
+    }
+
+    userService = container "Сервис пользователей" {
+      description "Управление пользователями и аутентификация"
+      technology "Python, FastAPI"
+    }
+
+    postsService = container "Сервис постов и комментариев" {
+      description "Управление задачами и списками"
+      technology "Go"
+    }
+
+    statisticsService = container "Сервис статистики" {
+      description "Сбор и анализ статистики использования"
+      technology "Python, FastAPI"
+    }
+
+    userServiceDB = container "User Database" {
+      description "Хранение данных пользователей"
+      technology "PosgteSQL"
+      style {
+        shape cylinder
+      }
+    }
+
+    postServiceDB = container "Post Database" {
+      description "Хранит данные постов и комментариев"
+      technology "PosgteSQL"
+      style {
+        shape cylinder
+      }
+    }
+
+    statServiceDB = container "Statistics Database" {
+      description "Хранит агрегированную статистику"
+      technology "ClickHouse"
+      style {
+        shape cylinder
+      }
+    }
+
+    kafka = container "Kafka" {
+      description "Обмен событиями между сервисами"
+      technology "Message Broker"
+      style {
+        shape queue
+      }
+    }
+  }
+
+user -> socialNetwork.apiGateway "Использует" "HTTPS"
+socialNetwork.apiGateway -> socialNetwork.userService "Маршрутизирует / Makes API calls to" "JSON/HTTPS"
+socialNetwork.apiGateway -> socialNetwork.postsService "Маршрутизирует / Makes API calls to" "JSON/HTTPS"
+socialNetwork.apiGateway -> socialNetwork.statisticsService "Маршрутизирует / Makes API calls to" "JSON/HTTPS"
+
+socialNetwork.userService -> socialNetwork.userServiceDB "Читает/Пишет" "SQL"
+socialNetwork.postsService -> socialNetwork.postServiceDB "Читает/Пишет" "SQL"
+socialNetwork.statisticsService -> socialNetwork.statServiceDB "Читает/Пишет" "SQL"
+
+socialNetwork.postsService -> socialNetwork.kafka "Публикует" "posts_events"
+socialNetwork.kafka -> socialNetwork.statisticsService "Подписывается" "posts_events"
+}
+
+views {
+   view index {
+        include *
+    }
+}

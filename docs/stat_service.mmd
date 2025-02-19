@@ -1,0 +1,24 @@
+erDiagram
+    POST_STATS {
+        int post_id PK
+        int likes_count
+        int views_count
+        int comments_count
+        datetime updated_at
+    }
+    EVENT_LOGS {
+        int id PK
+        string event_type
+        int entity_id
+        int user_id
+        datetime timestamp
+        string additional_info
+    }
+    USER_STATS {
+        int user_id PK
+        int total_posts
+        int total_likes
+        int total_comments
+        int total_comments_received
+        datetime updated_at
+    }
