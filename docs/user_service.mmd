@@ -1,0 +1,37 @@
+erDiagram
+    USERS {
+        int user_id PK
+        string username
+        string email
+        string password_hash
+        datetime created_at
+        datetime updated_at
+    }
+    PROFILES {
+        int profile_id PK
+        int user_id FK
+        string first_name
+        string last_name
+        string status
+        string avatar_url
+        datetime birth_date
+        datetime created_at
+        datetime updated_at
+    }
+    ROLES {
+        string name PK
+        string color
+        int access_level
+        string description
+        datetime created_at
+        datetime updated_at
+    }
+    USER_ROLES {
+        int user_id FK
+        int role_id FK
+        datetime assigned_at
+    }
+
+    USERS ||--o| PROFILES : "имеет"
+    USERS ||--o{ USER_ROLES : "назначается"
+    ROLES ||--o{ USER_ROLES : "назначается"
