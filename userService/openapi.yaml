@@ -24,11 +24,7 @@ paths:
           description: Successful Response
           content:
             application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/UserResponse'
-                type: array
-                title: Response List All Auth Listall Get
+              schema: {}
   /auth/{id}:
     get:
       tags:
@@ -150,6 +146,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /role/user_role_status/{user_name}:
+    get:
+      tags:
+      - Roles
+      summary: User Status
+      operationId: user_status_role_user_role_status__user_name__get
+      parameters:
+      - name: user_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: User Name
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /role/add:
     post:
       tags:
@@ -204,14 +225,14 @@ paths:
       tags:
       - Roles
       summary: List role's information
-      operationId: delete_role_role__role_name__post
+      operationId: get_role_info_role__role_name__post
       parameters:
-      - name: role_name
-        in: path
+      - name: roleName
+        in: query
         required: true
         schema:
           type: string
-          title: Role Name
+          title: Rolename
       responses:
         '200':
           description: Successful Response
@@ -219,6 +240,79 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RoleAddRequest'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /role/set_role/:
+    post:
+      tags:
+      - Roles
+      summary: Set Role
+      operationId: set_role_role_set_role__post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleSetRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /role/remove_role/:
+    delete:
+      tags:
+      - Roles
+      summary: Delete Role
+      operationId: delete_role_role_remove_role__delete
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleSetRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /role/get_roles/{user_name}:
+    get:
+      tags:
+      - Roles
+      summary: Get User Roles Router
+      operationId: get_user_roles_router_role_get_roles__user_name__get
+      parameters:
+      - name: user_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: User Name
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
         '422':
           description: Validation Error
           content:
@@ -286,6 +380,7 @@ components:
         access:
           $ref: '#/components/schemas/AccessLevel'
           description: Уровень доступа
+          default: 1
         description:
           anyOf:
           - type: string
@@ -296,38 +391,21 @@ components:
       required:
       - name
       - color
-      - access
       - description
       title: RoleAddRequest
-    UserResponse:
+    RoleSetRequest:
       properties:
-        id:
-          type: integer
-          title: Id
         username:
           type: string
           title: Username
-        email:
+        roleName:
           type: string
-          title: Email
-        hashed_password:
-          type: string
-          title: Hashed Password
-        profile_id:
-          type: integer
-          title: Profile Id
-        profile:
-          type: object
-          title: Profile
+          title: Rolename
       type: object
       required:
-      - id
       - username
-      - email
-      - hashed_password
-      - profile_id
-      - profile
-      title: UserResponse
+      - roleName
+      title: RoleSetRequest
     ValidationError:
       properties:
         loc:
