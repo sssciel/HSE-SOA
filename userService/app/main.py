@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from app.database import engine, Base
-from app.auth import router as router_auth
-from app.roles import router as router_roles
+from app.users.auth import router as router_auth
+from app.roles.roles import router as router_roles
 
 app = FastAPI()
 

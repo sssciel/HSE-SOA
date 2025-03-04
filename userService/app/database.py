@@ -6,6 +6,7 @@ import re
 from sqlalchemy import func, Integer, text, ForeignKey
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, declared_attr, Mapped, mapped_column, relationship
+from app.roles.utility import AccessLevel
 
 from app.config import get_db_url
 
@@ -29,18 +30,6 @@ class Base(AsyncAttrs, DeclarativeBase):
 
     created_at: Mapped[created_at]
     updated_at: Mapped[updated_at]
-
-"""
-Уровни доступа к сервису:
-
-Banned - не может создавать посты и комментировать
-User - обычный пользователь
-Admin - может удалять посты и банить пользователей
-"""
-class AccessLevel(int, enum.Enum):
-    banned = 0
-    user = 1
-    admin = 2
 
 class User(Base):
     id: Mapped[int_pk]

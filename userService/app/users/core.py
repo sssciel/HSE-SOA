@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, HTTPException, status, Response, D
 from jose import jwt, JWTError
 from datetime import datetime, timedelta, timezone
 from app.config import get_auth_data
-from app.schemas import UserRequest
+from app.users.schemas import UserRequest
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -49,5 +49,12 @@ async def get_current_user(token: str = Depends(get_token)):
     user = await UserRequest.find_one_id(int(user_id))
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='User not found')
+
+    return user
+
+async def authenticate_user(username: str, password: str):
+    user = await UserRequest.find_one(username=username)
+    if not user or verify_password(plain_password=password, hashed_password=user.hashed_password) is False:
+        return None
 
     return user

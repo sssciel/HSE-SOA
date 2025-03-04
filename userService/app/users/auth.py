@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, HTTPException, status, Response, Depends, Request
-from app.core import get_password_hash, verify_password, create_access_token, get_current_user
-from app.schemas import userRegistration, UserRequest, UserResponse, ProfileRequest, ProfileAddRequest, userLogin, ProfileUpdateRequest
+from app.users.core import get_password_hash, verify_password, create_access_token, get_current_user, authenticate_user
+from app.users.schemas import UserRequest, ProfileRequest
+from app.users.req_schemas import userRegistration, UserResponse, ProfileAddRequest, userLogin, ProfileUpdateRequest
 
 
 router = APIRouter(prefix='/auth', tags=['Auth'])
@@ -10,12 +11,12 @@ async def list_all() -> list[UserResponse]:
     return await UserRequest.find_all()
 
 @router.get("/{id}", summary="Получить одного пользователя")
-async def get_user(userID: int) -> UserResponse | str:
-    response = await UserRequest.find_one(userID)
+async def get_user(userID: int):
+    response = await UserRequest.find_one_id(userID)
     return response if response is not None else f"Пользователя {userID} не существует"
 
 @router.post("/register/")
-async def reg_user(user_data: userRegistration) -> bool:
+async def reg_user(user_data: userRegistration):
     user = await UserRequest.find_one(username=user_data.username)
     if user is not None:
         raise HTTPException(
@@ -47,13 +48,6 @@ async def reg_user(user_data: userRegistration) -> bool:
 
     await UserRequest.add(**user_request)
     return True
-
-async def authenticate_user(username: str, password: str):
-    user = await UserRequest.find_one(username=username)
-    if not user or verify_password(plain_password=password, hashed_password=user.hashed_password) is False:
-        return None
-
-    return user
 
 @router.post("/login/")
 async def auth_user(response: Response, user_data: userLogin):

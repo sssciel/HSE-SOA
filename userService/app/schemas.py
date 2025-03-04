@@ -7,15 +7,6 @@ from app.database import async_session_maker, User, Profile, AccessLevel, Role
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 
-class userRegistration(BaseModel):
-    username: str = Field(default=..., min_length=1, max_length=30, description="User's login")
-    password: str = Field(default=..., min_length=1, max_length=30, description="User's password")
-    email: EmailStr = Field(default=..., description="User's email")
-
-class userLogin(BaseModel):
-    username: str = Field(default=..., min_length=1, max_length=30, description="User's login")
-    password: str = Field(default=..., min_length=1, max_length=30, description="User's password")
-
 class BaseRequest:
     model = None
     
@@ -79,61 +70,3 @@ class BaseRequest:
                     await session.rollback()
                     raise e
                 return result.rowcount
-
-class UserRequest(BaseRequest):
-    model = User
-
-    @classmethod
-    async def find_one_id(cls, data_id):
-        async with async_session_maker() as session:
-            query = select(cls.model).options(joinedload(cls.model.profile)).filter_by(id=data_id)
-            result = await session.execute(query)
-            result = result.scalar_one_or_none()
-
-            if result is None:
-                return result
-
-            userData = result.to_dict()
-            userData["profile"] = result.profile
-            return userData
-
-class ProfileRequest(BaseRequest):
-    model = Profile
-
-class RoleRequest(BaseRequest):
-    model = Role
-
-class UserAddRequest(BaseModel):
-    username: str
-    email: str
-    hashed_password: str
-    profile_id: int
-
-class ProfileAddRequest(BaseModel):
-    first_name: str
-    last_name: str
-    status: str
-    birth_date: datetime
-
-class UserResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-    id: int
-
-    username: str
-    email: str
-    hashed_password: str
-    profile_id: int
-    profile: dict
-
-class RoleAddRequest(BaseModel):
-    name: str = Field(..., description="Название роли")
-    color: str = Field(..., description="Цвет роли в формате '(r, g, b)'")
-    access: AccessLevel = Field(..., description="Уровень доступа")
-    description: str | None = Field(..., description="Описание роли")
-
-class ProfileUpdateRequest(BaseModel):
-    first_name: str | None = None
-    last_name: str | None = None
-    status: str | None = None
-    birth_date: datetime | None = None
-

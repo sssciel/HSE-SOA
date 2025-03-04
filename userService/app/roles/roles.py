@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
-from app.core import get_password_hash
-from app.schemas import userRegistration, UserRequest, UserResponse, RoleAddRequest, RoleRequest
-from app.database import AccessLevel
+from app.roles.schemas import RoleRequest
+from app.roles.req_schemas import RoleAddRequest
+from app.roles.utility import AccessLevel
 
 router = APIRouter(prefix='/role', tags=['Roles'])
 
