@@ -6,6 +6,7 @@ from datetime import date
 from app.database import async_session_maker, User, Profile, AccessLevel, Role
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
+import logging
 
 class BaseRequest:
     """
@@ -78,3 +79,15 @@ class BaseRequest:
                     await session.rollback()
                     raise e
                 return result.rowcount
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+async def test_db_connection():
+    try:
+        async with async_session_maker() as session:
+            await session.execute(select(1))
+        # logger.info(f"{config.APPNAME} | DB is successfully connected")
+    except Exception as error:
+        logger.error(f"❌ Database cannot connect, startup will be aborted: {error}")
+        exit(1)

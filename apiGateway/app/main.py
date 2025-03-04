@@ -1,7 +1,7 @@
 import httpx
 from fastapi import FastAPI, Request, Response
 
-USER_SERVICE_URL = "http://localhost:8001"
+USER_SERVICE_URL = "http://userservice:8001"
 
 app = FastAPI(title="API Gateway")
 
