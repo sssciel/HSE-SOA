@@ -56,6 +56,7 @@ class Profile(Base):
     first_name: Mapped[str]
     last_name: Mapped[str]
     status: Mapped[str]
+    phone_number: Mapped[str]
     birth_date: Mapped[datetime]
 
     user: Mapped["User"] = relationship("User", back_populates="profile")
@@ -65,6 +66,7 @@ class Profile(Base):
             "id": self.id,
             "first_name": self.first_name,
             "last_name": self.last_name,
+            "phone_number": self.phone_number,
             "status": self.status,
             "birth_date": self.birth_date
         }
