@@ -9,11 +9,14 @@ app = FastAPI()
 def home_page():
     return "This is userService in ciel's SocialNetwork"
 
-# Создаем таблицы в базе данных
 @app.on_event("startup")
 async def on_startup():
+    """
+    Создаем таблицы в базе данных, если таковых нет.
+    """
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
+# Подключаем роуты модуля авторизации и управления ролями.
 app.include_router(router_auth)
 app.include_router(router_roles)

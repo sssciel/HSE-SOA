@@ -8,8 +8,12 @@ from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 
 class BaseRequest:
+    """
+    Базовый DAO класс для всех моделей UserService.
+    """
     model = None
-    
+
+    # Ищет все подходящие объекты в БД по заданным фильтрам.
     @classmethod
     async def find_all(cls, **filter_by):
         async with async_session_maker() as session:
@@ -17,6 +21,7 @@ class BaseRequest:
             result = await session.execute(query)
             return result.scalars().all()
 
+    # Ищет один подходящий объект в БД по заданным фильтрам.
     @classmethod
     async def find_one(cls, **filter_by):
         async with async_session_maker() as session:
@@ -24,6 +29,7 @@ class BaseRequest:
             result = await session.execute(query)
             return result.scalar_one_or_none()
 
+    # Добавляет объект в БД.
     @classmethod
     async def add(cls, **values):
         async with async_session_maker() as session:
@@ -37,6 +43,7 @@ class BaseRequest:
                     raise e
                 return new_instance
 
+    # Удаляет объект из БД.
     @classmethod
     async def delete(cls, delete_all: bool = False, **filter_by):
         if not delete_all and not filter_by:
@@ -53,6 +60,7 @@ class BaseRequest:
                     raise e
                 return result.rowcount
 
+    # Обновляет объект в БД.
     @classmethod
     async def update(cls, filter_by, **values):
         async with async_session_maker() as session:
