@@ -2,12 +2,12 @@ from fastapi import APIRouter, HTTPException, HTTPException, status, Response, D
 from app.users.core import get_password_hash, verify_password, create_access_token, get_current_user, authenticate_user
 from app.users.schemas import UserRequest, ProfileRequest
 from app.users.req_schemas import userRegistration, UserResponse, ProfileAddRequest, userLogin, ProfileUpdateRequest
-
+from app.roles.roles import user_status
 
 router = APIRouter(prefix='/auth', tags=['Auth'])
 
 @router.get("/listall", summary="Вывести всех пользователей")
-async def list_all() -> list[UserResponse]:
+async def list_all():
     return await UserRequest.find_all()
 
 @router.get("/{id}", summary="Получить одного пользователя")

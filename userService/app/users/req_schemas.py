@@ -18,11 +18,11 @@ class UserAddRequest(BaseModel):
     profile_id: int
 
 class ProfileAddRequest(BaseModel):
-    first_name: str
-    last_name: str
-    status: str
-    phone_number: str
-    birth_date: datetime
+    first_name: str = ""
+    last_name: str = ""
+    status: str = ""
+    phone_number: str = ""
+    birth_date: datetime = datetime.now()
 
     @field_validator("phone_number")
     @classmethod

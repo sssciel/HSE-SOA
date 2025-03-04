@@ -3,6 +3,9 @@ from app.database import engine, Base
 from app.users.auth import router as router_auth
 from app.roles.roles import router as router_roles
 from app.schemas import test_db_connection
+from fastapi.openapi.utils import get_openapi
+from fastapi.responses import Response
+import yaml
 
 app = FastAPI()
 
@@ -20,6 +23,17 @@ async def on_startup():
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
+@app.get("/openapi.yaml", include_in_schema=False)
+def get_openapi_yaml():
+    openapi_schema = get_openapi(
+        title = "UserService",
+        version="1.0.0",
+        routes=app.routes
+    )
+    yaml_schema = yaml.dump(openapi_schema, sort_keys=False, allow_unicode=True)
+    return Response(content=yaml_schema, media_type="application/x-yaml")
+
 
 # Подключаем роуты модуля авторизации и управления ролями.
 app.include_router(router_auth)
