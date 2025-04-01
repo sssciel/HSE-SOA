@@ -19,8 +19,6 @@ async def on_startup():
     Создаем таблицы в базе данных, если таковых нет.
     """
 
-    # await test_db_connection()
-
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 

@@ -1,0 +1,12 @@
+grpcio[all]
+grpcio-tools
+fastapi[all]
+requests
+asyncpg
+sqlalchemy
+pydantic-settings
+python-jose
+bcrypt==4.0.1
+passlib[bcrypt]
+pytest
+psycopg2

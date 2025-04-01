@@ -25,6 +25,15 @@ services:
       db:
         condition: service_healthy
 
+  postservice:
+    build: ./postService
+    container_name: post-service
+    ports:
+      - "50051:50051"
+    depends_on:
+      db:
+        condition: service_healthy
+
   apigateway:
     build: ./apiGateway
     container_name: api-gateway
