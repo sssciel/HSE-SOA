@@ -1,0 +1,473 @@
+openapi: 3.1.0
+info:
+  title: UserService
+  version: 1.0.0
+paths:
+  /:
+    get:
+      summary: Home Page
+      operationId: home_page__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /auth/listall:
+    get:
+      tags:
+      - Auth
+      summary: Вывести всех пользователей
+      operationId: list_all_auth_listall_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /auth/{id}:
+    get:
+      tags:
+      - Auth
+      summary: Получить одного пользователя
+      operationId: get_user_auth__id__get
+      parameters:
+      - name: userID
+        in: query
+        required: true
+        schema:
+          type: integer
+          title: Userid
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /auth/register/:
+    post:
+      tags:
+      - Auth
+      summary: Reg User
+      operationId: reg_user_auth_register__post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userRegistration'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /auth/login/:
+    post:
+      tags:
+      - Auth
+      summary: Auth User
+      operationId: auth_user_auth_login__post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userLogin'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /auth/me/:
+    get:
+      tags:
+      - Auth
+      summary: Get Me
+      operationId: get_me_auth_me__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /auth/logout/:
+    post:
+      tags:
+      - Auth
+      summary: Logout User
+      operationId: logout_user_auth_logout__post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /auth/update_profile/:
+    post:
+      tags:
+      - Auth
+      summary: Update Profile
+      operationId: update_profile_auth_update_profile__post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileUpdateRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /role/user_role_status/{user_name}:
+    get:
+      tags:
+      - Roles
+      summary: User Status
+      operationId: user_status_role_user_role_status__user_name__get
+      parameters:
+      - name: user_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: User Name
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /role/add:
+    post:
+      tags:
+      - Roles
+      summary: Add new role
+      operationId: add_new_role_role_add_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleAddRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /role/delete/{role_name}:
+    post:
+      tags:
+      - Roles
+      summary: Delete a role
+      operationId: delete_role_role_delete__role_name__post
+      parameters:
+      - name: role_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Role Name
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /role/{role_name}:
+    post:
+      tags:
+      - Roles
+      summary: List role's information
+      operationId: get_role_info_role__role_name__post
+      parameters:
+      - name: roleName
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Rolename
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleAddRequest'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /role/set_role/:
+    post:
+      tags:
+      - Roles
+      summary: Set Role
+      operationId: set_role_role_set_role__post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleSetRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /role/remove_role/:
+    delete:
+      tags:
+      - Roles
+      summary: Delete Role
+      operationId: delete_role_role_remove_role__delete
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleSetRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /role/get_roles/{user_name}:
+    get:
+      tags:
+      - Roles
+      summary: Get User Roles Router
+      operationId: get_user_roles_router_role_get_roles__user_name__get
+      parameters:
+      - name: user_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: User Name
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    AccessLevel:
+      type: integer
+      enum:
+      - 0
+      - 1
+      - 2
+      title: AccessLevel
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ProfileUpdateRequest:
+      properties:
+        first_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: First Name
+        last_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Name
+        status:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+        birth_date:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Birth Date
+        phone_number:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Phone Number
+      type: object
+      title: ProfileUpdateRequest
+    RoleAddRequest:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: Название роли
+        color:
+          type: string
+          title: Color
+          description: Цвет роли в формате '(r, g, b)'
+        access:
+          $ref: '#/components/schemas/AccessLevel'
+          description: Уровень доступа
+          default: 1
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: Описание роли
+      type: object
+      required:
+      - name
+      - color
+      - description
+      title: RoleAddRequest
+    RoleSetRequest:
+      properties:
+        username:
+          type: string
+          title: Username
+        roleName:
+          type: string
+          title: Rolename
+      type: object
+      required:
+      - username
+      - roleName
+      title: RoleSetRequest
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    userLogin:
+      properties:
+        username:
+          type: string
+          maxLength: 30
+          minLength: 1
+          title: Username
+          description: User's login
+        password:
+          type: string
+          maxLength: 30
+          minLength: 1
+          title: Password
+          description: User's password
+      type: object
+      required:
+      - username
+      - password
+      title: userLogin
+    userRegistration:
+      properties:
+        username:
+          type: string
+          maxLength: 30
+          minLength: 1
+          title: Username
+          description: User's login
+        password:
+          type: string
+          maxLength: 30
+          minLength: 1
+          title: Password
+          description: User's password
+        email:
+          type: string
+          format: email
+          title: Email
+          description: User's email
+      type: object
+      required:
+      - username
+      - password
+      - email
+      title: userRegistration
