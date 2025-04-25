@@ -12,10 +12,10 @@ message Post {
     int32 creator_id = 4;
     bool is_private = 5;
     repeated string tags = 6;
-    string loyalty_platform = 7;
-    google.protobuf.Timestamp created_at = 8;
-    google.protobuf.Timestamp updated_at = 9;
+    google.protobuf.Timestamp created_at = 7;
+    google.protobuf.Timestamp updated_at = 8;
 }
+
 
 message CreatePostRequest {
     string title = 1;
@@ -57,10 +57,32 @@ message ListPostsResponse {
     int32 total = 2;
 }
 
+message ViewPostRequest { int32 post_id = 1; int32 user_id = 2; }
+message LikePostRequest { int32 post_id = 1; int32 user_id = 2; }
+message CommentPostRequest { int32 post_id = 1; int32 user_id = 2; string text = 3; }
+message ListCommentsRequest { int32 post_id = 1; int32 offset = 2; int32 limit = 3; }
+
+message Comment {
+    int32 post_id = 1;
+    int32 user_id = 2;
+    string text = 3;
+    google.protobuf.Timestamp created_at = 4;
+}
+
+message ListCommentsResponse {
+    repeated Comment comments = 1;
+    int32 total = 2;
+}
+
 service PostsService {
     rpc CreatePost(CreatePostRequest) returns (Post);
     rpc DeletePost(DeletePostRequest) returns (google.protobuf.Empty);
     rpc UpdatePost(UpdatePostRequest) returns (Post);
     rpc GetPost(GetPostRequest) returns (Post);
     rpc ListPosts(ListPostsRequest) returns (ListPostsResponse);
+
+    rpc ViewPost(ViewPostRequest) returns (google.protobuf.Empty);
+    rpc LikePost(LikePostRequest) returns (google.protobuf.Empty);
+    rpc CommentPost(CommentPostRequest) returns (Comment);
+    rpc ListComments(ListCommentsRequest) returns (ListCommentsResponse);
 }

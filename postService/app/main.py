@@ -1,36 +1,81 @@
-from concurrent import futures
-import grpc
-import time
+import asyncio
+import json
+from aiokafka import AIOKafkaProducer
+from google.protobuf import empty_pb2
+from google.protobuf.timestamp_pb2 import Timestamp
 import service_pb2 as service_pb2
 import service_pb2_grpc as service_pb2_grpc
-from crud import (
-    create_post, delete_post, update_post, get_post, list_posts
-)
-from database import engine, Base
-from models import Post
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
 class PostsService(service_pb2_grpc.PostsServiceServicer):
+    def __init__(self):
+        self.loop = asyncio.get_event_loop()
+        self.producer = AIOKafkaProducer(
+            bootstrap_servers='kafka:9092',
+            loop=self.loop
+        )
+        self.loop.run_until_complete(self.producer.start())
+
     def CreatePost(self, request, context):
         return create_post(request)
 
     def DeletePost(self, request, context):
-        delete_post(request.id, request.user_id)
-        from google.protobuf import empty_pb2
-        return empty_pb2.Empty()
+        return delete_post(request)
 
     def UpdatePost(self, request, context):
         return update_post(request)
 
     def GetPost(self, request, context):
-        post = get_post(request.id, request.user_id)
-        if not post:
-            context.abort(grpc.StatusCode.NOT_FOUND, "Post not found")
-        return post
+        return get_post(request)
 
     def ListPosts(self, request, context):
         return list_posts(request.page, request.limit, request.user_id)
+
+    def ViewPost(self, request, context):
+        event = {
+            'client_id': request.user_id,
+            'post_id': request.post_id,
+            'timestamp': Timestamp().GetCurrentTime().ToJsonString()
+        }
+        self.loop.run_until_complete(
+            self.producer.send_and_wait('post_views', json.dumps(event).encode('utf-8'))
+        )
+        return empty_pb2.Empty()
+
+    def LikePost(self, request, context):
+        event = {
+            'client_id': request.user_id,
+            'post_id': request.post_id,
+            'timestamp': Timestamp().GetCurrentTime().ToJsonString()
+        }
+        self.loop.run_until_complete(
+            self.producer.send_and_wait('post_likes', json.dumps(event).encode('utf-8'))
+        )
+        return empty_pb2.Empty()
+
+    def CommentPost(self, request, context):
+        ts = Timestamp()
+        ts.GetCurrentTime()
+        event = {
+            'client_id': request.user_id,
+            'post_id': request.post_id,
+            'text': request.text,
+            'timestamp': ts.ToJsonString()
+        }
+        self.loop.run_until_complete(
+            self.producer.send_and_wait('post_comments', json.dumps(event).encode('utf-8'))
+        )
+        return service_pb2.Comment(
+            post_id=request.post_id,
+            user_id=request.user_id,
+            text=request.text,
+            created_at=ts
+        )
+
+    def ListComments(self, request, context):
+        return service_pb2.ListCommentsResponse(comments=[], total=0)
+
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

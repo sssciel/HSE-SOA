@@ -31,3 +31,16 @@ class postOut(BaseModel):
 class postList(BaseModel):
     posts: List[postOut]
     total: int
+
+class CommentCreate(BaseModel):
+    text: str
+
+class CommentOut(BaseModel):
+    post_id: int
+    user_id: int
+    text: str
+    created_at: datetime
+
+class CommentList(BaseModel):
+    comments: List[CommentOut]
+    total: int

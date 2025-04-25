@@ -1,6 +1,6 @@
 import grpc
 import os
-from app.post_schemas import postOut, postList
+from app.post_schemas import postOut, postList, CommentOut, CommentList
 import app.service_pb2 as service_pb2
 import app.service_pb2_grpc as service_pb2_grpc
 
@@ -98,3 +98,37 @@ def grpc_list_posts(page: int, limit: int, user_id: int):
             updated_at=p.updated_at,
         ))
     return postList(posts=posts, total=response.total)
+
+def grpc_view_post(post_id: int, user_id: int):
+    stub = service_pb2_grpc.PostsServiceStub(get_grpc_channel())
+    stub.ViewPost(service_pb2.ViewPostRequest(post_id=post_id, user_id=user_id))
+
+
+def grpc_like_post(post_id: int, user_id: int):
+    stub = service_pb2_grpc.PostsServiceStub(get_grpc_channel())
+    stub.LikePost(service_pb2.LikePostRequest(post_id=post_id, user_id=user_id))
+
+
+def grpc_comment_post(post_id: int, text: str, user_id: int) -> CommentOut:
+    stub = service_pb2_grpc.PostsServiceStub(get_grpc_channel())
+    resp = stub.CommentPost(service_pb2.CommentPostRequest(post_id=post_id, user_id=user_id, text=text))
+    return CommentOut(
+        post_id=resp.post_id,
+        user_id=resp.user_id,
+        text=resp.text,
+        created_at=resp.created_at
+    )
+
+
+def grpc_list_comments(post_id: int, offset: int, limit: int) -> CommentList:
+    stub = service_pb2_grpc.PostsServiceStub(get_grpc_channel())
+    resp = stub.ListComments(service_pb2.ListCommentsRequest(post_id=post_id, offset=offset, limit=limit))
+    comments = [
+        CommentOut(
+            post_id=c.post_id,
+            user_id=c.user_id,
+            text=c.text,
+            created_at=c.created_at
+        ) for c in resp.comments
+    ]
+    return CommentList(comments=comments, total=resp.total)
