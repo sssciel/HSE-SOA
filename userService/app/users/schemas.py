@@ -1,12 +1,7 @@
-from sqlalchemy import ForeignKey, text, Text, select
-from sqlalchemy.orm import relationship, Mapped, mapped_column, joinedload
-from pydantic import BaseModel, EmailStr, Field, ConfigDict
-from sqlalchemy import update as sqlalchemy_update, delete as sqlalchemy_delete 
-from datetime import date
-from app.database import async_session_maker, User, Profile, AccessLevel, Role
-from sqlalchemy.exc import SQLAlchemyError
-from datetime import datetime
+from app.database import Profile, User, async_session_maker
 from app.schemas import BaseRequest
+from sqlalchemy import select
+from sqlalchemy.orm import joinedload
 
 
 class UserRequest(BaseRequest):
@@ -15,7 +10,11 @@ class UserRequest(BaseRequest):
     @classmethod
     async def find_one_id(cls, data_id):
         async with async_session_maker() as session:
-            query = select(cls.model).options(joinedload(cls.model.profile)).filter_by(id=data_id)
+            query = (
+                select(cls.model)
+                .options(joinedload(cls.model.profile))
+                .filter_by(id=data_id)
+            )
             result = await session.execute(query)
             result = result.scalar_one_or_none()
 
@@ -25,6 +24,7 @@ class UserRequest(BaseRequest):
             userData = result.to_dict()
             userData["profile"] = result.profile
             return userData
+
 
 class ProfileRequest(BaseRequest):
     model = Profile
