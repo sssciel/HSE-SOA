@@ -6,6 +6,7 @@ package proto;
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
+// CRUD
 message Post {
     int32 post_id = 1;
     string title = 2;
@@ -49,26 +50,63 @@ message UpdatePostRequest {
 }
 
 message ListPostsRequest {
-    int32 page = 1;
-    int32 limit = 2;
-}
-
-message ListPostsUserRequest {
-    int32 page = 1;
-    int32 limit = 2;
-    int32 creator_id = 3;
+    int32 limit = 1;
+    int32 offset = 2;
 }
 
 
 message ListPostsResponse {
     repeated Post posts = 1;
-    int32 total = 2;
+}
+
+// Actions
+message PostComment {
+    int32 post_id = 1;
+    int32 comment_owner = 3;
+    string comment = 4;
+}
+
+message PostLikeRequest {
+    int32 post_id = 1;
+    int32 caller_id = 2;
+}
+
+message PostUnlikeRequest {
+    int32 post_id = 1;
+    int32 caller_id = 2;
+}
+
+message PostCommentRequest {
+    int32 post_id = 1;
+    int32 caller_id = 2;
+    string content = 3;
+}
+
+message PostViewRequest {
+    int32 post_id = 1;
+    int32 caller_id = 3;
+}
+
+message PostCommentsListRequest {
+    int32 post_id = 1;
+}
+
+message PostCommentsListResponse {
+    repeated PostComment comments = 1;
 }
 
 service PostsService {
+    // CRUD
     rpc CreatePost(CreatePostRequest) returns (PostResponse);
     rpc DeletePost(DeletePostRequest) returns (google.protobuf.Empty);
-    rpc UpdatePost(UpdatePostRequest) returns (PostResponse);
+    rpc UpdatePost(UpdatePostRequest) returns (google.protobuf.Empty);
     rpc GetPost(PostRequest) returns (PostResponse);
     rpc ListPosts(ListPostsRequest) returns (ListPostsResponse);
+
+    // Actions
+    rpc LikePost(PostLikeRequest) returns (google.protobuf.Empty);
+    rpc UnLikePost(PostUnlikeRequest) returns (google.protobuf.Empty);
+    rpc CommentPost(PostCommentRequest) returns (google.protobuf.Empty);
+    rpc ViewPost(PostViewRequest) returns (google.protobuf.Empty);
+    rpc ListCommentsPost(PostCommentsListRequest) returns (PostCommentsListResponse);
 }
