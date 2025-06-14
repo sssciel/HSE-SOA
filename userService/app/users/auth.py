@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from app.kafka.producer import producer
 from app.users.core import (
     authenticate_user,
     create_access_token,
@@ -22,13 +25,13 @@ async def list_all():
     return await UserRequest.find_all()
 
 
-@router.get("/{id}", summary="Получить одного пользователя")
+@router.get("/user/{id}", summary="Получить одного пользователя")
 async def get_user(userID: int):
     response = await UserRequest.find_one_id(userID)
     return response if response is not None else f"Пользователя {userID} не существует"
 
 
-@router.post("/register/")
+@router.post("/register")
 async def reg_user(user_data: userRegistration):
     user = await UserRequest.find_one(username=user_data.username)
     if user is not None:
@@ -59,11 +62,28 @@ async def reg_user(user_data: userRegistration):
     user_request["profile_id"] = profile_id
     del user_request["password"]
 
-    await UserRequest.add(**user_request)
+    result = await UserRequest.add(**user_request)
+
+    user = {
+        "user_id": result.id,
+        "username": result.username,
+        "created_at": (
+            result.created_at.isoformat()
+            if isinstance(result.created_at, datetime)
+            else str(result.created_at)
+        ),
+    }
+
+    producer.send(
+        topic="registrations",
+        value=user,
+    )
+    producer.flush()
+
     return True
 
 
-@router.post("/login/")
+@router.post("/login")
 async def auth_user(response: Response, user_data: userLogin):
     code = await authenticate_user(
         username=user_data.username, password=user_data.password
@@ -80,18 +100,18 @@ async def auth_user(response: Response, user_data: userLogin):
     return {"access_token": access_token, "refresh_token": None}
 
 
-@router.get("/me/")
+@router.get("/me")
 async def get_me(user_data: UserResponse = Depends(get_current_user)):
     return user_data
 
 
-@router.post("/logout/")
+@router.post("/logout")
 async def logout_user(response: Response):
     response.delete_cookie(key="users_access_token")
     return {"message": "Пользователь успешно вышел из системы"}
 
 
-@router.post("/update_profile/")
+@router.post("/update_profile")
 async def update_profile(
     update_info: ProfileUpdateRequest,
     user_data: UserResponse = Depends(get_current_user),
