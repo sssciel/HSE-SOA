@@ -51,6 +51,26 @@ services:
     depends_on:
       - userservice
 
+  statservice:
+    build:
+      context: .
+      dockerfile: statService/dockerfile
+    container_name: stat-service
+    volumes:
+      - ./proto:/app/proto:ro
+    ports:
+      - "50052:50052"
+    depends_on:
+      - kafka
+      - clickhouse
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+
   zookeeper:
     image: confluentinc/cp-zookeeper:7.2.1
     hostname: zookeeper

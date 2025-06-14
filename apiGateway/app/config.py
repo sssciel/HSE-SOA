@@ -10,6 +10,7 @@ class Config(BaseSettings):
     ALGORITHM: str
     USER_SERVICE_URL: str
     POST_SERVICE_URL: str
+    STATS_SERVICE_URL: str
 
     model_config = SettingsConfigDict(
         env_file=Path(__file__).absolute().parent.parent.joinpath(".env")
@@ -25,6 +26,10 @@ def get_user_service_url():
 
 def get_post_service_url():
     return config.POST_SERVICE_URL
+
+
+def get_stat_service_url():
+    return config.STATS_SERVICE_URL
 
 
 def get_auth_data():

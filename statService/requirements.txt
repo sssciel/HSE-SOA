@@ -1,0 +1,7 @@
+fastapi[all]
+requests
+kafka-python
+clickhouse-driver
+grpcio
+grpcio-tools
+pydantic-settings
